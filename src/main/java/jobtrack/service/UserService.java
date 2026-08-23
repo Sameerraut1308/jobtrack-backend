@@ -1,0 +1,26 @@
+package jobtrack.service;
+
+import jobtrack.entity.User;
+import jobtrack.repository.UserRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class UserService {
+
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    public User saveUser(User user) {
+        return userRepository.save(user);
+    }
+
+    public List<User> getAllusers() {
+        return userRepository.findAll();
+    }
+
+}
