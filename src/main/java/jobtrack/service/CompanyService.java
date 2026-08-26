@@ -22,4 +22,24 @@ public class CompanyService {
     public List<Company> getAllCompanies() {
         return companyRepository.findAll();
     }
+
+    public Company getCompanyById(Long id) {
+        return companyRepository.findById(id).orElseThrow();
+    }
+
+    public Company updateCompany(Long id, Company company) {
+
+        Company existingCompany = getCompanyById(id);
+
+        existingCompany.setName(company.getName());
+        existingCompany.setType(company.getType());
+        existingCompany.setWebsite(company.getWebsite());
+        existingCompany.setFoundedDate(company.getFoundedDate());
+
+        return companyRepository.save(existingCompany);
+    }
+
+    public void deleteCompany(Long id) {
+        companyRepository.deleteById(id);
+    }
 }

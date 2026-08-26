@@ -56,4 +56,16 @@ public class Company {
         return name;
     }
 
+    public CompanyType getType() {
+        return type;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public LocalDate getFoundedDate() {
+        return foundedDate;
+    }
+
 }

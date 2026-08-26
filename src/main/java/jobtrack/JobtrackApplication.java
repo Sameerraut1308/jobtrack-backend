@@ -13,7 +13,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class JobtrackApplication implements CommandLineRunner {
+public class JobtrackApplication {
 
     private final CompanyService companyService;
 
@@ -25,16 +25,4 @@ public class JobtrackApplication implements CommandLineRunner {
         SpringApplication.run(JobtrackApplication.class, args);
     }
 
-    @Override
-    public void run(String... args) {
-
-        List<Company> companies = companyService.getAllCompanies();
-
-        System.out.println("All companies: ");
-
-        companies.forEach(company -> {
-            System.out.println(company.getName());
-        });
-
-    }
 }
