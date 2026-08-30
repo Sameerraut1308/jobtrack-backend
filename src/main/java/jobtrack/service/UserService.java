@@ -23,4 +23,25 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    public User getUserById(Long id) {
+        return userRepository.findById(id).orElseThrow();
+    }
+
+    public User updateUser(Long id, User user) {
+        User existing_user = userRepository.findById(id).orElseThrow();
+
+        existing_user.setDateOfBirth(user.getDateOfBirth());
+        existing_user.setEmail(user.getEmail());
+        existing_user.setMobileNo(user.getMobileNo());
+        existing_user.setName(user.getName());
+        existing_user.setPassword(user.getPassword());
+
+        return userRepository.save(existing_user);
+
+    }
+
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
+
 }
