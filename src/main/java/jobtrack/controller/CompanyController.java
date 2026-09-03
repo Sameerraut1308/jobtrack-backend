@@ -2,7 +2,10 @@ package jobtrack.controller;
 
 import jobtrack.entity.Company;
 import jobtrack.service.CompanyService;
+import jobtrack.security.CurrentUserService;
+import jobtrack.entity.User;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
@@ -19,13 +23,17 @@ import java.util.List;
 public class CompanyController {
 
     private final CompanyService companyService;
+    private final CurrentUserService currentUserService;
 
-    public CompanyController(CompanyService companyService) {
+    public CompanyController(CompanyService companyService, CurrentUserService currentUserService) {
         this.companyService = companyService;
+        this.currentUserService = currentUserService;
+
     }
 
     @GetMapping
     public List<Company> getAllCompanies() {
+
         return companyService.getAllCompanies();
     }
 
@@ -35,7 +43,9 @@ public class CompanyController {
     }
 
     @PostMapping
-    public Company saveCompany(@RequestBody Company company) {
+    public Company saveCompany(@RequestBody Company company, Authentication authentication) {
+
+        System.out.println("Authenticated user: " + authentication.getPrincipal());
         return companyService.saveCompany(company);
     }
 

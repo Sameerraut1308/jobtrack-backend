@@ -1,7 +1,10 @@
 package jobtrack.service;
 
+import jobtrack.dto.LoginRequest;
 import jobtrack.entity.User;
 import jobtrack.repository.UserRepository;
+import jobtrack.security.JwtService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,12 +13,19 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            JwtService jwtService) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     public User saveUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
@@ -24,24 +34,37 @@ public class UserService {
     }
 
     public User getUserById(Long id) {
-        return userRepository.findById(id).orElseThrow();
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
     }
 
     public User updateUser(Long id, User user) {
-        User existing_user = userRepository.findById(id).orElseThrow();
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
 
-        existing_user.setDateOfBirth(user.getDateOfBirth());
-        existing_user.setEmail(user.getEmail());
-        existing_user.setMobileNo(user.getMobileNo());
-        existing_user.setName(user.getName());
-        existing_user.setPassword(user.getPassword());
+        existingUser.setDateOfBirth(user.getDateOfBirth());
+        existingUser.setEmail(user.getEmail());
+        existingUser.setMobileNo(user.getMobileNo());
+        existingUser.setName(user.getName());
 
-        return userRepository.save(existing_user);
+        if (user.getPassword() != null && !user.getPassword().isBlank()) {
+            existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
 
+        return userRepository.save(existingUser);
     }
 
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
 
+    public String login(LoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + request.getEmail()));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid credentials");
+        }
+        return jwtService.generateToken(user.getEmail());
+    }
 }

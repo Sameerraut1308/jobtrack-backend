@@ -1,5 +1,6 @@
 package jobtrack.controller;
 
+import jobtrack.dto.LoginRequest;
 import jobtrack.entity.User;
 import jobtrack.service.UserService;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +40,12 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public void updateUser(@PathVariable Long id) {
+    public void deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestBody LoginRequest request) {
+        return userService.login(request);
     }
 }
