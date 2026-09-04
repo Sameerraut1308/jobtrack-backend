@@ -30,6 +30,16 @@ public class JobService {
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found with id: " + id));
     }
 
+    // Search jobs with optional keyword and location filters
+    public List<Job> searchJobs(String keyword, String location) {
+        return jobRepository.searchJobs(keyword, location);
+    }
+
+    // Get all jobs for a specific company
+    public List<Job> getJobsByCompany(Long companyId) {
+        return jobRepository.findByCompanyId(companyId);
+    }
+
     public Job saveJob(JobRequest request) {
         Company company = companyRepository.findById(request.getCompanyId())
                 .orElseThrow(() -> new ResourceNotFoundException("Company not found with id: " + request.getCompanyId()));

@@ -18,14 +18,26 @@ public class JobController {
         this.jobService = jobService;
     }
 
+    // Get all jobs or filter by keyword & location: GET /api/jobs?keyword=java&location=remote
     @GetMapping
-    public List<Job> getAllJobs() {
+    public List<Job> getJobs(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String location) {
+        if (keyword != null || location != null) {
+            return jobService.searchJobs(keyword, location);
+        }
         return jobService.getAllJobs();
     }
 
     @GetMapping("/{id}")
     public Job getJobById(@PathVariable Long id) {
         return jobService.getJobById(id);
+    }
+
+    // Get all jobs of a company: GET /api/jobs/company/{companyId}
+    @GetMapping("/company/{companyId}")
+    public List<Job> getJobsByCompany(@PathVariable Long companyId) {
+        return jobService.getJobsByCompany(companyId);
     }
 
     @PostMapping
