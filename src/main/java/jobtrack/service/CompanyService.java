@@ -1,5 +1,6 @@
 package jobtrack.service;
 
+import jobtrack.dto.CompanyRequest;
 import jobtrack.entity.Company;
 import jobtrack.repository.CompanyRepository;
 import org.springframework.stereotype.Service;
@@ -15,8 +16,14 @@ public class CompanyService {
         this.companyRepository = companyRepository;
     }
 
-    public Company saveCompany(Company comapny) {
-        return companyRepository.save(comapny);
+    public Company saveCompany(CompanyRequest request) {
+        Company company = new Company();
+        company.setName(request.getName());
+        company.setType(request.getType());
+        company.setWebsite(request.getWebsite());
+        company.setFoundedDate(request.getFoundedDate());
+
+        return companyRepository.save(company);
     }
 
     public List<Company> getAllCompanies() {
@@ -24,22 +31,25 @@ public class CompanyService {
     }
 
     public Company getCompanyById(Long id) {
-        return companyRepository.findById(id).orElseThrow();
+        return companyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Company not found with id: " + id));
     }
 
-    public Company updateCompany(Long id, Company company) {
-
+    public Company updateCompany(Long id, CompanyRequest request) {
         Company existingCompany = getCompanyById(id);
 
-        existingCompany.setName(company.getName());
-        existingCompany.setType(company.getType());
-        existingCompany.setWebsite(company.getWebsite());
-        existingCompany.setFoundedDate(company.getFoundedDate());
+        existingCompany.setName(request.getName());
+        existingCompany.setType(request.getType());
+        existingCompany.setWebsite(request.getWebsite());
+        existingCompany.setFoundedDate(request.getFoundedDate());
 
         return companyRepository.save(existingCompany);
     }
 
     public void deleteCompany(Long id) {
+        if (!companyRepository.existsById(id)) {
+            throw new RuntimeException("Company not found with id: " + id);
+        }
         companyRepository.deleteById(id);
     }
 }

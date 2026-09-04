@@ -1,5 +1,7 @@
 package jobtrack.controller;
 
+import jakarta.validation.Valid;
+import jobtrack.dto.JobRequest;
 import jobtrack.entity.Job;
 import jobtrack.service.JobService;
 import org.springframework.web.bind.annotation.*;
@@ -9,7 +11,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/jobs")
 public class JobController {
-    public final JobService jobService;
+
+    private final JobService jobService;
 
     public JobController(JobService jobService) {
         this.jobService = jobService;
@@ -26,21 +29,19 @@ public class JobController {
     }
 
     @PostMapping
-    public Job saveJob(@RequestParam Long companyId, @RequestBody Job job) {
-        return jobService.saveJob(companyId, job);
+    public Job saveJob(@Valid @RequestBody JobRequest request) {
+        return jobService.saveJob(request);
     }
 
     @PutMapping("/{id}")
     public Job updateJob(
             @PathVariable Long id,
-            @RequestParam Long companyId,
-            @RequestBody Job job) {
-        return jobService.updateJob(id, companyId, job);
+            @Valid @RequestBody JobRequest request) {
+        return jobService.updateJob(id, request);
     }
 
     @DeleteMapping("/{id}")
     public void deleteJob(@PathVariable Long id) {
         jobService.deleteJob(id);
     }
-
 }

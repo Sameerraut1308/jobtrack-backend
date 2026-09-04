@@ -1,6 +1,8 @@
 package jobtrack.controller;
 
+import jakarta.validation.Valid;
 import jobtrack.dto.LoginRequest;
+import jobtrack.dto.UserRegisterRequest;
 import jobtrack.entity.User;
 import jobtrack.service.UserService;
 import org.springframework.web.bind.annotation.*;
@@ -17,26 +19,20 @@ public class UserController {
         this.userService = userService;
     }
 
+    // Register endpoint with validation
     @PostMapping
-    public User saveUser(@RequestBody User user) {
-        return userService.saveUser(user);
+    public User registerUser(@Valid @RequestBody UserRegisterRequest request) {
+        return userService.registerUser(request);
     }
 
     @GetMapping
     public List<User> getAllUsers() {
-        return userService.getAllusers();
+        return userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
     public User getUserById(@PathVariable Long id) {
         return userService.getUserById(id);
-    }
-
-    @PutMapping("/{id}")
-    public User updateUser(
-            @PathVariable Long id,
-            @RequestBody User user) {
-        return userService.updateUser(id, user);
     }
 
     @DeleteMapping("/{id}")

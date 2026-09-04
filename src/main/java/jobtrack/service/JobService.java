@@ -1,7 +1,8 @@
 package jobtrack.service;
 
-import jobtrack.entity.Job;
+import jobtrack.dto.JobRequest;
 import jobtrack.entity.Company;
+import jobtrack.entity.Job;
 import jobtrack.repository.CompanyRepository;
 import jobtrack.repository.JobRepository;
 import org.springframework.stereotype.Service;
@@ -23,37 +24,48 @@ public class JobService {
         return jobRepository.findAll();
     }
 
-    public Job getJobById(Long Id) {
-        return jobRepository.findById(Id).orElseThrow();
+    public Job getJobById(Long id) {
+        return jobRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Job not found with id: " + id));
     }
 
-    public Job saveJob(Long companyId, Job job) {
-        Company company = companyRepository.findById(companyId).orElseThrow();
+    public Job saveJob(JobRequest request) {
+        Company company = companyRepository.findById(request.getCompanyId())
+                .orElseThrow(() -> new RuntimeException("Company not found with id: " + request.getCompanyId()));
+
+        Job job = new Job();
         job.setCompany(company);
+        job.setTitle(request.getTitle());
+        job.setDescription(request.getDescription());
+        job.setLocation(request.getLocation());
+        job.setSalary(request.getSalary());
+        job.setJobUrl(request.getJobUrl());
+        job.setPostedDate(request.getPostedDate());
 
         return jobRepository.save(job);
     }
 
-    public Job updateJob(Long id, Long companyId, Job job) {
+    public Job updateJob(Long id, JobRequest request) {
+        Job existingJob = getJobById(id);
 
-        Job existingJob = jobRepository.findById(id)
-                .orElseThrow();
-
-        Company company = companyRepository.findById(companyId)
-                .orElseThrow();
+        Company company = companyRepository.findById(request.getCompanyId())
+                .orElseThrow(() -> new RuntimeException("Company not found with id: " + request.getCompanyId()));
 
         existingJob.setCompany(company);
-        existingJob.setTitle(job.getTitle());
-        existingJob.setDescription(job.getDescription());
-        existingJob.setLocation(job.getLocation());
-        existingJob.setSalary(job.getSalary());
-        existingJob.setJobUrl(job.getJobUrl());
-        existingJob.setPostedDate(job.getPostedDate());
+        existingJob.setTitle(request.getTitle());
+        existingJob.setDescription(request.getDescription());
+        existingJob.setLocation(request.getLocation());
+        existingJob.setSalary(request.getSalary());
+        existingJob.setJobUrl(request.getJobUrl());
+        existingJob.setPostedDate(request.getPostedDate());
 
         return jobRepository.save(existingJob);
     }
 
     public void deleteJob(Long id) {
+        if (!jobRepository.existsById(id)) {
+            throw new RuntimeException("Job not found with id: " + id);
+        }
         jobRepository.deleteById(id);
     }
 }
