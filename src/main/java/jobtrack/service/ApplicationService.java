@@ -2,6 +2,7 @@ package jobtrack.service;
 
 import jobtrack.entity.Application;
 import jobtrack.entity.Job;
+import jobtrack.entity.Resume;
 import jobtrack.entity.User;
 import jobtrack.enums.ApplicationStatus;
 import jobtrack.exception.BadRequestException;
@@ -29,7 +30,7 @@ public class ApplicationService {
         this.currentUserService = currentUserService;
     }
 
-    public Application applyForJob(Long jobId, String notes) {
+    public Application applyForJob(Long jobId, String notes, Long resumeId) {
         User currentUser = currentUserService.getCurrentUser();
 
         if (applicationRepository.findByUserIdAndJobId(currentUser.getId(), jobId).isPresent()) {
@@ -44,6 +45,12 @@ public class ApplicationService {
         application.setJob(job);
         application.setStatus(ApplicationStatus.APPLIED);
         application.setNotes(notes);
+
+        if (resumeId != null) {
+            Resume resume = new Resume();
+            resume.setId(resumeId);
+            application.setResume(resume);
+        }
 
         return applicationRepository.save(application);
     }

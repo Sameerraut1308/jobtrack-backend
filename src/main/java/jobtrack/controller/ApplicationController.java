@@ -17,12 +17,13 @@ public class ApplicationController {
         this.applicationService = applicationService;
     }
 
-    // Apply for a job: POST /api/applications/{jobId}
+        // Apply for a job: POST /api/applications/{jobId}?notes=...&resumeId=...
     @PostMapping("/{jobId}")
     public Application applyForJob(
             @PathVariable Long jobId,
-            @RequestParam(required = false) String notes) {
-        return applicationService.applyForJob(jobId, notes);
+            @RequestParam(required = false) String notes,
+            @RequestParam(required = false) Long resumeId) {
+        return applicationService.applyForJob(jobId, notes, resumeId);
     }
 
     // Get my submitted applications: GET /api/applications/my
