@@ -3,6 +3,7 @@ package jobtrack.service;
 import jobtrack.dto.JobRequest;
 import jobtrack.entity.Company;
 import jobtrack.entity.Job;
+import jobtrack.exception.ResourceNotFoundException;
 import jobtrack.repository.CompanyRepository;
 import jobtrack.repository.JobRepository;
 import org.springframework.stereotype.Service;
@@ -26,12 +27,12 @@ public class JobService {
 
     public Job getJobById(Long id) {
         return jobRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Job not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found with id: " + id));
     }
 
     public Job saveJob(JobRequest request) {
         Company company = companyRepository.findById(request.getCompanyId())
-                .orElseThrow(() -> new RuntimeException("Company not found with id: " + request.getCompanyId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Company not found with id: " + request.getCompanyId()));
 
         Job job = new Job();
         job.setCompany(company);
@@ -49,7 +50,7 @@ public class JobService {
         Job existingJob = getJobById(id);
 
         Company company = companyRepository.findById(request.getCompanyId())
-                .orElseThrow(() -> new RuntimeException("Company not found with id: " + request.getCompanyId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Company not found with id: " + request.getCompanyId()));
 
         existingJob.setCompany(company);
         existingJob.setTitle(request.getTitle());
@@ -64,7 +65,7 @@ public class JobService {
 
     public void deleteJob(Long id) {
         if (!jobRepository.existsById(id)) {
-            throw new RuntimeException("Job not found with id: " + id);
+            throw new ResourceNotFoundException("Job not found with id: " + id);
         }
         jobRepository.deleteById(id);
     }

@@ -4,6 +4,8 @@ import jobtrack.entity.Application;
 import jobtrack.entity.Job;
 import jobtrack.entity.User;
 import jobtrack.enums.ApplicationStatus;
+import jobtrack.exception.BadRequestException;
+import jobtrack.exception.ResourceNotFoundException;
 import jobtrack.repository.ApplicationRepository;
 import jobtrack.repository.JobRepository;
 import jobtrack.security.CurrentUserService;
@@ -27,17 +29,15 @@ public class ApplicationService {
         this.currentUserService = currentUserService;
     }
 
-    // Apply for a job as the logged-in user
     public Application applyForJob(Long jobId, String notes) {
         User currentUser = currentUserService.getCurrentUser();
 
-        // Check if already applied
         if (applicationRepository.findByUserIdAndJobId(currentUser.getId(), jobId).isPresent()) {
-            throw new RuntimeException("You have already applied for this job!");
+            throw new BadRequestException("You have already applied for this job!");
         }
 
         Job job = jobRepository.findById(jobId)
-                .orElseThrow(() -> new RuntimeException("Job not found with id: " + jobId));
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found with id: " + jobId));
 
         Application application = new Application();
         application.setUser(currentUser);
@@ -48,30 +48,26 @@ public class ApplicationService {
         return applicationRepository.save(application);
     }
 
-    // Get all applications of the currently logged-in user
     public List<Application> getMyApplications() {
         User currentUser = currentUserService.getCurrentUser();
         return applicationRepository.findByUserId(currentUser.getId());
     }
 
-    // Get all applications for a specific job
     public List<Application> getApplicationsByJobId(Long jobId) {
         return applicationRepository.findByJobId(jobId);
     }
 
-    // Update application status
     public Application updateStatus(Long applicationId, ApplicationStatus status) {
         Application application = applicationRepository.findById(applicationId)
-                .orElseThrow(() -> new RuntimeException("Application not found with id: " + applicationId));
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found with id: " + applicationId));
 
         application.setStatus(status);
         return applicationRepository.save(application);
     }
 
-    // Delete / Withdraw application
     public void withdrawApplication(Long applicationId) {
         Application application = applicationRepository.findById(applicationId)
-                .orElseThrow(() -> new RuntimeException("Application not found with id: " + applicationId));
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found with id: " + applicationId));
 
         applicationRepository.delete(application);
     }

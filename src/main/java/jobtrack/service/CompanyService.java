@@ -2,6 +2,7 @@ package jobtrack.service;
 
 import jobtrack.dto.CompanyRequest;
 import jobtrack.entity.Company;
+import jobtrack.exception.ResourceNotFoundException;
 import jobtrack.repository.CompanyRepository;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +33,7 @@ public class CompanyService {
 
     public Company getCompanyById(Long id) {
         return companyRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Company not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Company not found with id: " + id));
     }
 
     public Company updateCompany(Long id, CompanyRequest request) {
@@ -48,7 +49,7 @@ public class CompanyService {
 
     public void deleteCompany(Long id) {
         if (!companyRepository.existsById(id)) {
-            throw new RuntimeException("Company not found with id: " + id);
+            throw new ResourceNotFoundException("Company not found with id: " + id);
         }
         companyRepository.deleteById(id);
     }
